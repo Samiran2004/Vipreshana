@@ -46,8 +46,8 @@ app.use((req, res, next) => {
 // ✅ MongoDB connection
 connectMongoDB(Configs.DB_URI);
 
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
+if (process.env.MONGO_CONNECTION_STRING) {
+  mongoose.connect(process.env.MONGO_CONNECTION_STRING)
     .then(() => console.log('✨ MongoDB connected successfully ✨'))
     .catch(err => console.error('❌ MongoDB connection failed:', err));
 }
@@ -89,7 +89,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     services: {
       supabase: process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SUPABASE_ANON_KEY ? 'configured' : 'not_configured',
-      mongodb: process.env.MONGODB_URI ? 'configured' : 'not_configured'
+      mongodb: process.env.MONGO_CONNECTION_STRING ? 'configured' : 'not_configured'
     },
     endpoints: {
       auth: '/api/auth'
@@ -112,6 +112,7 @@ app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
 // ✅ Bookings
 app.post('/api/bookings', Controllers.BookingController);
+app.get('/api/bookings/:phone', Controllers.GetBookingByPhoneController);
 app.get('/api/details', Controllers.GetAllBookingController);
 
 // ✅ Server test
