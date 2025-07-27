@@ -112,7 +112,8 @@ app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
 // ✅ Bookings
 app.post('/api/bookings', Controllers.BookingController);
-app.get('/api/bookings/:phone', Controllers.GetBookingByPhoneController);
+// Route to retrieve bookings by phone number - fixes issue where users couldn't see their bookings even though booking on that phone number was already made
+app.get('/api/bookings/:phone', Controllers.GetBookingByPhoneController); 
 app.get('/api/details', Controllers.GetAllBookingController);
 
 // ✅ Server test
