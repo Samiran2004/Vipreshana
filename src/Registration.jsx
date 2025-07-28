@@ -30,13 +30,28 @@ const RegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const navigate = useNavigate();
+  const [passwordStrength, setPasswordStrength] = useState('');
 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
+   const checkPasswordStrength = (password) => {
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+    const moderateRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+    if (strongRegex.test(password)) return 'Strong';
+    else if (moderateRegex.test(password)) return 'Moderate';
+    else return 'Weak';
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === 'password') {
+      setPasswordStrength(checkPasswordStrength(value));
+    }
+
     if (error) setError('');
   };
 
@@ -46,6 +61,11 @@ const RegistrationForm = () => {
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    if (checkPasswordStrength(formData.password) === 'Weak') {
+      setError('Password is too weak. Please choose a stronger password.');
       return;
     }
 
