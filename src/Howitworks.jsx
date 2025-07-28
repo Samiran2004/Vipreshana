@@ -184,7 +184,71 @@ const HowItWorks = () => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
         </svg>
       </motion.button>
+      
     )}
+    <div
+      className={`container mx-auto px-4 py-16 transition-all duration-300 ${
+        isDark ? "bg-gray-900 text-white" : "bg-white"
+      }`}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className={`max-w-2xl mx-auto rounded-2xl shadow-xl p-8 ${
+          isDark ? "bg-gray-800" : "bg-gray-50"
+        }`}
+      >
+        <h2
+          className={`text-3xl font-bold mb-6 text-center ${
+            isDark
+              ? "text-blue-400"
+              : "bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent"
+          }`}
+        >
+          Still Questions?
+        </h2>
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            placeholder="Your Name"
+            className={`w-full p-3 rounded-lg focus:outline-none focus:ring-2 ${
+              isDark
+                ? "bg-gray-700 border-gray-600 focus:ring-blue-400"
+                : "bg-white border border-gray-300 focus:ring-pink-400"
+            }`}
+          />
+          <input
+            type="email"
+            placeholder="Email Address"
+            className={`w-full p-3 rounded-lg focus:outline-none focus:ring-2 ${
+              isDark
+                ? "bg-gray-700 border-gray-600 focus:ring-blue-400"
+                : "bg-white border border-gray-300 focus:ring-pink-400"
+            }`}
+          />
+          <textarea
+            placeholder="Type your Message"
+            className={`w-full p-3 rounded-lg h-32 focus:outline-none focus:ring-2 resize-none ${
+              isDark
+                ? "bg-gray-700 border-gray-600 focus:ring-blue-400"
+                : "bg-white border border-gray-300 focus:ring-pink-400"
+            }`}
+          />
+          <button
+            type="submit"
+            className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg transition ${
+              isDark
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90"
+            }`}
+          >
+            Send ✈️
+          </button>
+        </form>
+      </motion.div>
+    </div>
     </>
   );
 };
