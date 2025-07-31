@@ -5,6 +5,9 @@ const { sendEmailOTP, generateEmailOTP } = require("../../services/emailOTPServi
 const sendOTPController = async (req, res) => {
     const { phone, email, verificationType } = req.body;
 
+    console.log('📥 OTP Request Body:', req.body);
+    console.log('🔍 Parsed values:', { phone, email, verificationType });
+
     try {
         // Validate input
         if (!verificationType || (verificationType !== 'phone' && verificationType !== 'email')) {
@@ -74,12 +77,7 @@ const sendOTPController = async (req, res) => {
         let sendResult;
         
         if (verificationType === 'phone') {
-            // Temporarily disabled SMS for testing
-            return res.status(400).json({
-                success: false,
-                error: "SMS OTP is temporarily disabled. Please use Email OTP for testing."
-            });
-            // sendResult = await sendOTP(phone, otp);
+            sendResult = await sendOTP(phone, otp);
         } else {
             sendResult = await sendEmailOTP(email, otp);
         }

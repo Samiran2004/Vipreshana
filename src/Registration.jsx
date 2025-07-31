@@ -12,7 +12,7 @@ import OTPVerification from './components/OTPVerification';
 import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
 import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+import API_BASE_URL from './config/api';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -32,6 +32,7 @@ const RegistrationForm = () => {
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const navigate = useNavigate();
   const [passwordStrength, setPasswordStrength] = useState('');
+
 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -65,10 +66,7 @@ const RegistrationForm = () => {
       return;
     }
 
-    if (checkPasswordStrength(formData.password) === 'Weak') {
-      setError('Password is too weak. Please choose a stronger password.');
-      return;
-    }
+
 
     if (formData.role === 'admin' && !formData.email.endsWith('@svecw.edu.in')) {
       toast.error('Please enter a valid email for admin registration.');
@@ -83,9 +81,12 @@ const RegistrationForm = () => {
     // Send OTP first
     try {
       const otpData = {
-        verificationType: choiceForOTP,
+        verificationType: choiceForOTP === 'sms' ? 'phone' : 'email',
         ...(choiceForOTP === 'sms' ? { phone: formData.phone } : { email: formData.email })
       };
+
+      console.log('📤 Frontend sending OTP data:', otpData);
+      console.log('🔍 choiceForOTP:', choiceForOTP);
 
       const response = await axios.post(`${API_BASE_URL}/api/send-otp`, otpData);
       
@@ -159,7 +160,7 @@ const RegistrationForm = () => {
               <OTPVerification
                 phone={choiceForOTP === 'sms' ? formData.phone : null}
                 email={choiceForOTP === 'email' ? formData.email : null}
-                verificationType={choiceForOTP}
+                verificationType={choiceForOTP === 'sms' ? 'phone' : 'email'}
                 onVerificationSuccess={handleOTPVerificationSuccess}
               />
             </div>
@@ -255,6 +256,8 @@ const RegistrationForm = () => {
                         {show ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    
+
                   </div>
                 ))}
               </div>

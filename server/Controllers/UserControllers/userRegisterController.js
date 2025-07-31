@@ -8,6 +8,8 @@ const sanitize = (str) => {
     return str?.trim().replace(/[<>"'\/]/g, '');
 };
 
+
+
 const userRegisterController = async (req, res) => {
     let { name, email, password, phone, role } = req.body;
 
@@ -16,6 +18,8 @@ const userRegisterController = async (req, res) => {
         email = sanitize(email);
         phone = phone?.trim();
         role = sanitize(role);
+
+
 
         // Check if user already exists
         const existingUser = await Models.UserSchema.findOne({ $or: [{ email }, { phone }] });

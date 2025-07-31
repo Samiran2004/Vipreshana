@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Sun, Moon, Car, Truck, Bus, MapPin, User, Phone, Calculator, Sparkles, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
 import Navbar from './Navbar'; // <-- Import your Navbar component!
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+import API_BASE_URL from '../config/api';
 
 function debounce(func, delay) {
   let timeout;

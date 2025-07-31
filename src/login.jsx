@@ -12,7 +12,7 @@ import AuthRequired from './components/AuthRequired';
 import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
 import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+import API_BASE_URL from './config/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({ phone: '', email: '', password: '' });

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useTheme } from '../context/ThemeContext';
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+import API_BASE_URL from '../config/api';
 
 const OTPVerification = ({ phone, email, verificationType, onVerificationSuccess, onBack }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);

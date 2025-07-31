@@ -16,10 +16,13 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   'http://localhost:3000',              // dev frontend
   'http://localhost:3001',              // dev frontend (alternative port)
-  'https://vipreshana-2.vercel.app'     // deployed frontend
+  'https://vipreshana-2.vercel.app',    // deployed frontend
+  'https://vipreshana-2-git-fork-thulasipri-c030df-sailaja-adapas-projects.vercel.app'  // forked frontend
 ];
 
 // ✅ Updated CORS Configuration
+// For local testing: allows any localhost origin
+// For production: only allows specific origins
 app.use(cors({
   origin: function (origin, callback) {
     console.log('🔍 CORS check for origin:', origin);
@@ -31,13 +34,13 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Allow localhost on any port for development
+    // Allow localhost on any port for development (local testing)
     if (origin.startsWith('http://localhost:')) {
       console.log('✅ Allowing localhost origin:', origin);
       return callback(null, true);
     }
     
-    // Allow specific origins
+    // Allow specific origins (production)
     if (allowedOrigins.includes(origin)) {
       console.log('✅ Allowing specific origin:', origin);
       return callback(null, true);
@@ -63,6 +66,8 @@ app.use((req, res, next) => {
 });
 
 // ✅ MongoDB connection
+// For local testing: uses localhost if MONGO_CONNECTION_STRING is not set
+// For production: uses MONGO_CONNECTION_STRING from environment variables
 const mongoURI = process.env.MONGO_CONNECTION_STRING || 'mongodb://localhost:27017/vipreshana';
 connectMongoDB(Configs.DB_URI);
 

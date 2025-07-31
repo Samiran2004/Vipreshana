@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext'; // Adjust the import path as necessary
 import PageMeta from './components/Pagemeta';
+import API_BASE_URL from './config/api';
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,7 +39,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const response = await axios.post('https://vipreshana-3.onrender.com/api/reset-password', {
+            const response = await axios.post(`${API_BASE_URL}/api/reset-password`, {
                 email,
                 newPassword
             });
