@@ -123,7 +123,7 @@ const LoginDashboard = () => {
                 */}
                 {/* User Profile Circle */}
                 {user && (
-                    <div className="absolute top-4 left-4 z-30">
+                    <div className="absolute top-11 left-4 z-30">
                         <button
                             ref={buttonRef}
                             onClick={() => setShowDropdown(!showDropdown)}
