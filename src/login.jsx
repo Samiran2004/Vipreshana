@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { signInWithGoogle } from './lib/supabase';
+
 import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 import AuthRequired from './components/AuthRequired';
@@ -15,7 +15,8 @@ import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ phone: '', password: '' });
+  const [formData, setFormData] = useState({ phone: '', email: '', password: '' });
+  const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' or 'email'
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -53,17 +54,38 @@ const Login = () => {
     setIsLoading(true);
     cleanUrlOfTokens();
 
-    const validIndianNumber = /^[6-9]\d{9}$/;
-    const allowedTestPhones = ['4444444444', '1212122121', '1234567890', '0987654321'];
+    console.log('🔍 Login attempt:', { loginMethod, formData });
 
-    if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formData.phone)) {
-      toast.error('⚠️ Enter a valid phone number');
-      setIsLoading(false);
-      return;
+    // Validate based on login method
+    if (loginMethod === 'phone') {
+      const validIndianNumber = /^[6-9]\d{9}$/;
+      const allowedTestPhones = ['4444444444', '1212122121', '1234567890', '0987654321'];
+
+      if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formData.phone)) {
+        toast.error('⚠️ Enter a valid phone number');
+        setIsLoading(false);
+        return;
+      }
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error('⚠️ Enter a valid email address');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/login`, formData, {
+      // Prepare login data based on method
+      const loginData = {
+        password: formData.password,
+        ...(loginMethod === 'phone' ? { phone: formData.phone } : { email: formData.email })
+      };
+
+      console.log('📤 Sending login data:', loginData);
+      console.log('🔗 API URL:', `${API_BASE_URL}/api/login`);
+
+      const response = await axios.post(`${API_BASE_URL}/api/login`, loginData, {
         withCredentials: true
       });
 
@@ -104,9 +126,9 @@ const Login = () => {
 
           // 👇 Route based on credentials
           let redirectPath = '/logindashboard';
-          if (formData.phone === '1234567890' && formData.password === '1212') {
+          if (loginMethod === 'phone' && formData.phone === '1234567890' && formData.password === '1212') {
             redirectPath = '/driver';
-          } else if (formData.phone === '0987654321' && formData.password === '1212') {
+          } else if (loginMethod === 'phone' && formData.phone === '0987654321' && formData.password === '1212') {
             redirectPath = '/admin';
           } else {
             redirectPath = location.state?.from || '/logindashboard';
@@ -133,47 +155,11 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsLoading(true);
-      cleanUrlOfTokens();
 
-      toast.success('Redirecting to Google sign-in...', {
-        position: 'top-center',
-        autoClose: 1500,
-        style: {
-          backgroundColor: '#28a745',
-          color: '#fff',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          borderRadius: '12px',
-          textAlign: 'center',
-        },
-      });
 
-      const redirectPath = location.state?.from || '/logindashboard';
-      sessionStorage.setItem('auth_redirect', redirectPath);
-
-      const { success, error } = await signInWithGoogle();
-      if (!success) throw new Error(error);
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      toast.error(`Google sign-in failed: ${error.message || 'Please try again'}`, {
-        position: 'top-center',
-        style: {
-          backgroundColor: '#e60023',
-          color: '#fff',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          borderRadius: '12px',
-          textAlign: 'center',
-        },
-      });
-      setIsLoading(false);
-    }
-  };
-
-  const isDisabled = !formData.phone || !formData.password;
+  const isDisabled = loginMethod === 'phone' 
+    ? (!formData.phone || !formData.password)
+    : (!formData.email || !formData.password);
   const redirectFrom = location.state?.from;
 
   return (
@@ -207,19 +193,67 @@ const Login = () => {
               <h1 className={`text-4xl font-bold text-center mb-6 ${isDark ? 'text-white' : 'text-black'}`}>Sign In</h1>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="phone" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📞 Phone</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    onChange={handleChange}
-                    style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
-                    className="mt-1 block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40"
-                    placeholder="Enter your phone number"
-                  />
+                {/* Login Method Selector */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setLoginMethod('phone')}
+                    className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                      loginMethod === 'phone'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    📞 Phone
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLoginMethod('email')}
+                    className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                      loginMethod === 'email'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    📧 Email
+                  </button>
                 </div>
+
+                {/* Phone Input */}
+                {loginMethod === 'phone' && (
+                  <div>
+                    <label htmlFor="phone" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📞 Phone</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleChange}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                      className="mt-1 block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                )}
+
+                {/* Email Input */}
+                {loginMethod === 'email' && (
+                  <div>
+                    <label htmlFor="email" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📧 Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                      className="mt-1 block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40"
+                      placeholder="Enter your email address"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label htmlFor="password" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>🔒 Password</label>
@@ -256,22 +290,6 @@ const Login = () => {
                   }`}
                 >
                   {isLoading ? 'Logging in...' : 'Sign In'}
-                </button>
-
-                <div className="relative my-6 flex items-center">
-                  <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
-                  <span className="px-4 text-base text-gray-500 dark:text-gray-400 font-semibold">OR</span>
-                  <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
-                  className="w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-sm font-medium backdrop-blur-sm border-white/40 hover:bg-white/40"
-                >
-                  <svg className="h-5 w-5 mr-2" viewBox="0 0 533.5 544.3"><g><path d="M533.5..." fill="#4285F4" /></g></svg>
-                  Continue with Google
                 </button>
               </form>
 

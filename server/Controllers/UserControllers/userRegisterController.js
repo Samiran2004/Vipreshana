@@ -23,16 +23,17 @@ const userRegisterController = async (req, res) => {
             return res.status(400).json({ error: "Email or Phone already registered" });
         }
 
-        // Verify OTP before registration
+        // Verify OTP before registration (check for either phone or email verification)
         const verifiedOTP = await Models.OTPSchema.findOne({
-            phone,
-            isVerified: true,
-            expiresAt: { $gt: new Date() }
+            $or: [
+                { phone, isVerified: true, expiresAt: { $gt: new Date() } },
+                { email, isVerified: true, expiresAt: { $gt: new Date() } }
+            ]
         });
 
         if (!verifiedOTP) {
             return res.status(400).json({ 
-                error: "Phone number not verified. Please verify your phone number with OTP first." 
+                error: "Phone number or email not verified. Please verify with OTP first." 
             });
         }
 

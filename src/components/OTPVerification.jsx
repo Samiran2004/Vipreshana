@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, ArrowLeft, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { Phone, Mail, ArrowLeft, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useTheme } from '../context/ThemeContext';
 
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
-const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
+const OTPVerification = ({ phone, email, verificationType, onVerificationSuccess, onBack }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -35,7 +35,12 @@ const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
     setError('');
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/send-otp`, { phone });
+      const otpData = {
+        verificationType,
+        ...(verificationType === 'sms' ? { phone } : { email })
+      };
+
+      const response = await axios.post(`${API_BASE_URL}/api/send-otp`, otpData);
       
       if (response.data.success) {
         toast.success('OTP sent successfully!');
@@ -89,14 +94,20 @@ const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/verify-otp`, {
-        phone,
-        otp: otpString
-      });
+      const verifyData = {
+        verificationType,
+        otp: otpString,
+        ...(verificationType === 'sms' ? { phone } : { email })
+      };
+
+      const response = await axios.post(`${API_BASE_URL}/api/verify-otp`, verifyData);
 
       if (response.data.success) {
         setIsVerified(true);
-        toast.success('Phone number verified successfully!');
+        const successMessage = verificationType === 'sms' 
+          ? 'Phone number verified successfully!' 
+          : 'Email verified successfully!';
+        toast.success(successMessage);
         setTimeout(() => {
           onVerificationSuccess();
         }, 1000);
@@ -125,13 +136,21 @@ const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
     }`}>
       <div className="text-center mb-8">
         <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
-          <Phone className="w-8 h-8 text-white" />
+          {verificationType === 'sms' ? (
+            <Phone className="w-8 h-8 text-white" />
+          ) : (
+            <Mail className="w-8 h-8 text-white" />
+          )}
         </div>
-        <h2 className="text-2xl font-bold mb-2">Verify Your Phone</h2>
+        <h2 className="text-2xl font-bold mb-2">
+          Verify Your {verificationType === 'sms' ? 'Phone' : 'Email'}
+        </h2>
         <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-sm mb-2`}>
           We've sent a verification code to
         </p>
-        <p className="font-semibold text-lg">{phone}</p>
+        <p className="font-semibold text-lg">
+          {verificationType === 'sms' ? phone : email}
+        </p>
       </div>
 
       {error && (
@@ -144,7 +163,9 @@ const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
       {isVerified && (
         <div className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-lg flex items-start gap-3">
           <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-300 mt-0.5" />
-          <span className="text-green-700 dark:text-green-200 text-sm">Phone number verified successfully!</span>
+          <span className="text-green-700 dark:text-green-200 text-sm">
+          {verificationType === 'sms' ? 'Phone number' : 'Email'} verified successfully!
+        </span>
         </div>
       )}
 
@@ -225,7 +246,7 @@ const OTPVerification = ({ phone, onVerificationSuccess, onBack }) => {
                 Verified
               </div>
             ) : (
-              'Verify Phone Number'
+              `Verify ${verificationType === 'sms' ? 'Phone Number' : 'Email'}`
             )}
           </button>
 
