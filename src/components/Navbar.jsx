@@ -144,7 +144,7 @@ const Navbar = () => {
     <>
       {/* Frosted Glass Navbar */}
       <nav
-        className={` fixed top-0 left-0 w-full h-[4.5rem] z-50 px-4 py-2 flex items-center justify-between
+        className={` fixed top-0 left-0 w-full h-[3.5rem] z-50 px-4 py-1 flex items-center justify-between
           border-b border-white/10 dark:border-white/20 shadow-md z-80 transition-all duration-300`}
         style={{
           WebkitBackdropFilter: "blur(24px)",
