@@ -12,7 +12,7 @@ import OTPVerification from './components/OTPVerification';
 import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
 import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+import API_BASE_URL from './config/api';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -28,9 +28,11 @@ const RegistrationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [choiceForOTP, setChoiceForOTP] = useState(''); // 'sms' or 'email'
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const navigate = useNavigate();
   const [passwordStrength, setPasswordStrength] = useState('');
+
 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -64,18 +66,38 @@ const RegistrationForm = () => {
       return;
     }
 
-    if (checkPasswordStrength(formData.password) === 'Weak') {
-      setError('Password is too weak. Please choose a stronger password.');
-      return;
-    }
+
 
     if (formData.role === 'admin' && !formData.email.endsWith('@svecw.edu.in')) {
       toast.error('Please enter a valid email for admin registration.');
       return;
     }
 
-    // Show OTP verification instead of directly registering
-    setShowOTPVerification(true);
+    if (!choiceForOTP) {
+      setError('Please choose SMS or Email for OTP verification');
+      return;
+    }
+
+    // Send OTP first
+    try {
+      const otpData = {
+        verificationType: choiceForOTP === 'sms' ? 'phone' : 'email',
+        ...(choiceForOTP === 'sms' ? { phone: formData.phone } : { email: formData.email })
+      };
+
+      console.log('📤 Frontend sending OTP data:', otpData);
+      console.log('🔍 choiceForOTP:', choiceForOTP);
+
+      const response = await axios.post(`${API_BASE_URL}/api/send-otp`, otpData);
+      
+      if (response.data.success) {
+        setShowOTPVerification(true);
+      } else {
+        setError(response.data.error || 'Failed to send OTP');
+      }
+    } catch (err) {
+      setError('Failed to send OTP: ' + (err.response?.data?.error || 'Unknown error'));
+    }
   };
 
   const handleOTPVerificationSuccess = async () => {
@@ -136,9 +158,10 @@ const RegistrationForm = () => {
               isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white/80 border-white/20 text-gray-900'
             }`}>
               <OTPVerification
-                phone={formData.phone}
+                phone={choiceForOTP === 'sms' ? formData.phone : null}
+                email={choiceForOTP === 'email' ? formData.email : null}
+                verificationType={choiceForOTP === 'sms' ? 'phone' : 'email'}
                 onVerificationSuccess={handleOTPVerificationSuccess}
-                onBack={handleBackToForm}
               />
             </div>
           </div>
@@ -203,7 +226,10 @@ const RegistrationForm = () => {
 
               {/* Passwords */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {[['password', showPassword, setShowPassword], ['confirmPassword', showConfirmPassword, setShowConfirmPassword]].map(([name, show, toggle], i) => (
+                {[
+                  ['password', showPassword, setShowPassword], 
+                  ['confirmPassword', showConfirmPassword, setShowConfirmPassword]
+                ].map(([name, show, setShow], i) => (
                   <div key={i}>
                     <label className={`block mb-1 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       {name === 'password' ? 'Password' : 'Confirm Password'}
@@ -224,12 +250,14 @@ const RegistrationForm = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => toggle(!show)}
+                        onClick={() => setShow(!show)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
                         {show ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    
+
                   </div>
                 ))}
               </div>
@@ -284,6 +312,56 @@ const RegistrationForm = () => {
                   ⚠️ Admin registration requires a valid @svecw.edu.in email address
                 </div>
               )}
+
+              {/* OTP Choice */}
+              <div className="space-y-3">
+                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Choose OTP verification method:
+                </label>
+                <div className="flex gap-4">
+                  <label className={`flex items-center gap-2 cursor-pointer p-3 rounded-lg border transition-all duration-200 ${
+                    choiceForOTP === 'sms'
+                      ? isDark
+                        ? 'bg-blue-900 border-blue-600 text-blue-100'
+                        : 'bg-blue-50 border-blue-300 text-blue-700'
+                      : isDark
+                      ? 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="otpChoice"
+                      value="sms"
+                      checked={choiceForOTP === 'sms'}
+                      onChange={(e) => setChoiceForOTP(e.target.value)}
+                      className="sr-only"
+                    />
+                    <Phone className="w-4 h-4" />
+                    <span>SMS</span>
+                  </label>
+                  
+                  <label className={`flex items-center gap-2 cursor-pointer p-3 rounded-lg border transition-all duration-200 ${
+                    choiceForOTP === 'email'
+                      ? isDark
+                        ? 'bg-blue-900 border-blue-600 text-blue-100'
+                        : 'bg-blue-50 border-blue-300 text-blue-700'
+                      : isDark
+                      ? 'bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700'
+                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="otpChoice"
+                      value="email"
+                      checked={choiceForOTP === 'email'}
+                      onChange={(e) => setChoiceForOTP(e.target.value)}
+                      className="sr-only"
+                    />
+                    <Mail className="w-4 h-4" />
+                    <span>Email</span>
+                  </label>
+                </div>
+              </div>
 
               {/* Submit Button */}
               <button

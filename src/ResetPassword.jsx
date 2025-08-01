@@ -5,15 +5,24 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext'; // Adjust the import path as necessary
 import PageMeta from './components/Pagemeta';
+import API_BASE_URL from './config/api';
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [email, setEmail] = useState('');
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
 
-    // Extract token from URL query parameters
-    const token = new URLSearchParams(location.search).get('token');
+    // Extract email from URL query parameters
+    const urlEmail = new URLSearchParams(location.search).get('email');
     const isDark = theme === 'dark';
+
+    // Set email from URL if available
+    React.useEffect(() => {
+        if (urlEmail) {
+            setEmail(urlEmail);
+        }
+    }, [urlEmail]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,9 +32,15 @@ const ResetPassword = () => {
             return;
         }
 
+        // Check if email is provided
+        if (!email) {
+            toast.error("Email is required for password reset!", { position: "top-center" });
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:5000/reset-password', {
-                token,
+            const response = await axios.post(`${API_BASE_URL}/api/reset-password`, {
+                email,
                 newPassword
             });
 
@@ -113,6 +128,25 @@ const ResetPassword = () => {
                     }`}>Enter a new password for your account.</p>
                     
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label htmlFor="email" className={`block text-sm font-medium transition-colors duration-300 ${
+                                isDark ? 'text-gray-300' : 'text-gray-700'
+                            }`}>📧 Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className={`mt-1 block w-full border rounded-md shadow-sm p-2 transition-all duration-300 ${
+                                    isDark 
+                                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400 focus:ring-opacity-30' 
+                                        : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                                }`}
+                                placeholder="Enter your email address"
+                            />
+                        </div>
                         <div>
                             <label htmlFor="newPassword" className={`block text-sm font-medium transition-colors duration-300 ${
                                 isDark ? 'text-gray-300' : 'text-gray-700'

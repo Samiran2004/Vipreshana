@@ -15,21 +15,43 @@ const PORT = process.env.PORT || 3001;
 
 const allowedOrigins = [
   'http://localhost:3000',              // dev frontend
-  'https://vipreshana-2.vercel.app'     // deployed frontend
+  'http://localhost:3001',              // dev frontend (alternative port)
+  'https://vipreshana-2.vercel.app',    // deployed frontend
+  'https://vipreshana-2-git-fork-thulasipri-c030df-sailaja-adapas-projects.vercel.app'  // forked frontend
 ];
 
 // ✅ Updated CORS Configuration
+// For local testing: allows any localhost origin
+// For production: only allows specific origins
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin); // allow request from this origin
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    console.log('🔍 CORS check for origin:', origin);
+    console.log('📋 Allowed origins:', allowedOrigins);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
     }
+    
+    // Allow localhost on any port for development (local testing)
+    if (origin.startsWith('http://localhost:')) {
+      console.log('✅ Allowing localhost origin:', origin);
+      return callback(null, true);
+    }
+    
+    // Allow specific origins (production)
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ Allowing specific origin:', origin);
+      return callback(null, true);
+    }
+    
+    console.log('❌ Blocking origin:', origin);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
 }));
 
 // ✅ Middleware
@@ -44,13 +66,14 @@ app.use((req, res, next) => {
 });
 
 // ✅ MongoDB connection
+// For local testing: uses localhost if MONGO_CONNECTION_STRING is not set
+// For production: uses MONGO_CONNECTION_STRING from environment variables
+const mongoURI = process.env.MONGO_CONNECTION_STRING || 'mongodb://localhost:27017/vipreshana';
 connectMongoDB(Configs.DB_URI);
 
-if (process.env.MONGO_CONNECTION_STRING) {
-  mongoose.connect(process.env.MONGO_CONNECTION_STRING)
-    .then(() => console.log('✨ MongoDB connected successfully ✨'))
-    .catch(err => console.error('❌ MongoDB connection failed:', err));
-}
+mongoose.connect(mongoURI)
+  .then(() => console.log('✨ MongoDB connected successfully ✨'))
+  .catch(err => console.error('❌ MongoDB connection failed:', err));
 
 // ✅ Mongoose schema
 const registrationSchema = new mongoose.Schema({
@@ -109,6 +132,7 @@ app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPCon
 // ✅ Auth routes
 app.post('/api/register', Controllers.UserRegisterController);
 app.post('/api/forgot-password', Controllers.ForgotPasswordController);
+app.post('/api/reset-password', Controllers.ResetPasswordController);
 
 // ✅ Bookings
 app.post('/api/bookings', Controllers.BookingController);
@@ -124,15 +148,37 @@ app.get('/api/test', (req, res) => {
 // ✅ Login route
 app.post('/api/login', async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { phone, email, password } = req.body;
+    
+    console.log('📥 Login request body:', req.body);
+    console.log('🔍 Parsed values:', { phone, email, password });
 
-    if (!phone || !password) {
-      return res.status(400).json({ message: 'Phone and password are required.' });
+    if (!password) {
+      console.log('❌ No password provided');
+      return res.status(400).json({ message: 'Password is required.' });
     }
 
-    const user = await Registration.findOne({ phone });
+    if (!phone && !email) {
+      console.log('❌ No phone or email provided');
+      return res.status(400).json({ message: 'Phone number or email is required.' });
+    }
+
+    // Find user by phone or email
+    let user;
+    console.log('🔍 Login attempt:', { phone, email });
+    
+    if (phone) {
+      user = await Registration.findOne({ phone });
+      console.log('📱 Searching by phone:', phone, 'User found:', !!user);
+    } else if (email) {
+      user = await Registration.findOne({ email });
+      console.log('📧 Searching by email:', email, 'User found:', !!user);
+    }
+
     if (!user) {
-      return res.status(404).json({ message: 'No user found with this phone number.' });
+      return res.status(404).json({ 
+        message: 'No user found with this phone number or email.' 
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

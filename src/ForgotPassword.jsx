@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // <-- Add this import
 import PageMeta from './components/Pagemeta';
-const API_BASE_URL =  'https://vipreshana-3.onrender.com';
+import API_BASE_URL from './config/api';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');

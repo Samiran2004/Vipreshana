@@ -2,7 +2,7 @@ const Models = require("../../Models/index.models");
 
 const getBookingByPhoneController = async (req, res) => {
     const { phone } = req.params;
-    
+
     console.log('🔍 Fetching bookings for phone:', phone);
     console.log('📋 Request params:', req.params);
 

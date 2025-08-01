@@ -3,8 +3,28 @@ const mongoose = require('mongoose');
 const otpSchema = new mongoose.Schema({
     phone: {
         type: String,
-        required: true,
+        required: function() {
+            return !this.email; 
+        },
         index: true
+    },
+    email: {
+        type: String,
+        required: function() {
+            return !this.phone;
+        },
+        index: true,
+        validate: {
+            validator: function(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: 'Please provide a valid email address'
+        }
+    },
+    verificationType: {
+        type: String,
+        enum: ['phone', 'email'],
+        required: true
     },
     otp: {
         type: String,
@@ -17,7 +37,7 @@ const otpSchema = new mongoose.Schema({
     expiresAt: {
         type: Date,
         required: true,
-        index: { expireAfterSeconds: 0 } // Auto-delete expired documents
+        index: { expireAfterSeconds: 0 } 
     },
     attempts: {
         type: Number,
@@ -33,8 +53,9 @@ const otpSchema = new mongoose.Schema({
     }
 });
 
-// Index for faster queries
 otpSchema.index({ phone: 1, createdAt: -1 });
+otpSchema.index({ email: 1, createdAt: -1 });
+otpSchema.index({ verificationType: 1, createdAt: -1 });
 
 const OTP = mongoose.model('OTP', otpSchema);
 

@@ -18,7 +18,7 @@ const forgotPasswordController = async (req, res) => {
         html: `
             <p>Hello,</p>
             <p>You requested to reset your password. Click the link below:</p>
-            <a href="https://vipreshana-2.vercel.app/reset-password" style="color: blue;">Reset Password</a>
+            <a href="https://vipreshana-2.vercel.app/reset-password?email=${sanitizedEmail}" style="color: blue;">Reset Password</a>
             <p>If you didn't request this, just ignore this email.</p>
             <p>– Vipreshana Team</p>
         `

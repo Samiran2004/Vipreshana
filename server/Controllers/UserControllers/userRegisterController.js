@@ -8,6 +8,8 @@ const sanitize = (str) => {
     return str?.trim().replace(/[<>"'\/]/g, '');
 };
 
+
+
 const userRegisterController = async (req, res) => {
     let { name, email, password, phone, role } = req.body;
 
@@ -17,22 +19,25 @@ const userRegisterController = async (req, res) => {
         phone = phone?.trim();
         role = sanitize(role);
 
+
+
         // Check if user already exists
         const existingUser = await Models.UserSchema.findOne({ $or: [{ email }, { phone }] });
         if (existingUser) {
             return res.status(400).json({ error: "Email or Phone already registered" });
         }
 
-        // Verify OTP before registration
+        // Verify OTP before registration (check for either phone or email verification)
         const verifiedOTP = await Models.OTPSchema.findOne({
-            phone,
-            isVerified: true,
-            expiresAt: { $gt: new Date() }
+            $or: [
+                { phone, isVerified: true, expiresAt: { $gt: new Date() } },
+                { email, isVerified: true, expiresAt: { $gt: new Date() } }
+            ]
         });
 
         if (!verifiedOTP) {
             return res.status(400).json({ 
-                error: "Phone number not verified. Please verify your phone number with OTP first." 
+                error: "Phone number or email not verified. Please verify with OTP first." 
             });
         }
 

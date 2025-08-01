@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Navbar from "./components/Navbar";
 import PageMeta from "./components/Pagemeta";
 
-const API_BASE_URL = "https://vipreshana-3.onrender.com";
+import API_BASE_URL from './config/api';
 
 const UserBookings = () => {
   const { theme } = useTheme();
