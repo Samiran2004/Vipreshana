@@ -5,6 +5,32 @@ const sanitize = (str) => {
     return str?.trim().replace(/[<>"'\/]/g, '');
 };
 
+// Password validation function
+const validatePassword = (password) => {
+    const errors = [];
+    
+    if (!password || password.length < 8) {
+        errors.push('Password must be at least 8 characters long');
+    }
+    if (!/[A-Z]/.test(password)) {
+        errors.push('Password must contain at least one uppercase letter (A-Z)');
+    }
+    if (!/[a-z]/.test(password)) {
+        errors.push('Password must contain at least one lowercase letter (a-z)');
+    }
+    if (!/\d/.test(password)) {
+        errors.push('Password must contain at least one number (0-9)');
+    }
+    if (!/[@$!%*?#&]/.test(password)) {
+        errors.push('Password must contain at least one special character (@$!%*?#&)');
+    }
+    
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
+};
+
 const resetPasswordController = async (req, res) => {
     try {
         const { email, newPassword } = req.body;
@@ -22,6 +48,15 @@ const resetPasswordController = async (req, res) => {
             return res.status(404).json({ 
                 success: false,
                 message: 'No user found with this email address' 
+            });
+        }
+
+        // Validate password strength
+        const passwordValidation = validatePassword(newPassword);
+        if (!passwordValidation.isValid) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Password does not meet security requirements: ' + passwordValidation.errors.join(', ')
             });
         }
 
