@@ -5,7 +5,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext'; // Adjust the import path as necessary
 import PageMeta from './components/Pagemeta';
+import PasswordStrengthIndicator from './components/PasswordStrengthIndicator';
 import API_BASE_URL from './config/api';
+import { validatePassword } from './utils/passwordStrength';
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,6 +28,17 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Password validation
+        if (newPassword) {
+            const validation = validatePassword(newPassword);
+            if (!validation.isValid) {
+                toast.error("Please fix password requirements: " + validation.errors.join(', '), { 
+                    position: "top-center" 
+                });
+                return;
+            }
+        }
 
         if (newPassword !== confirmPassword) {
             toast.error("Passwords do not match!", { position: "top-center" });
@@ -165,6 +178,8 @@ const ResetPassword = () => {
                                 }`}
                                 placeholder="Enter your new password"
                             />
+                            {/* Password Strength Indicator */}
+                            <PasswordStrengthIndicator password={newPassword} isDark={isDark} />
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className={`block text-sm font-medium transition-colors duration-300 ${
