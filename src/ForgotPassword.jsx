@@ -77,18 +77,6 @@ const ForgotPassword = () => {
                     ? "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" 
                     : "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80')"
             }}>
-                {/* Theme Toggle Button */}
-                <button
-                    onClick={toggleTheme}
-                    className={`absolute top-4 right-4 p-3 rounded-full transition-all duration-300 shadow-lg z-10 ${
-                        theme === 'dark' 
-                            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
-                            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                    }`}
-                    title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                >
-                    {theme === 'light' ? '🌙' : '☀️'}
-                </button>
 
                <div className={`absolute inset-0 flex justify-center pt-24 transition-all duration-300 ${
                     theme === 'dark' ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
