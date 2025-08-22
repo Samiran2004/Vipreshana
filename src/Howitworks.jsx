@@ -187,7 +187,7 @@ const HowItWorks = () => {
       
     )}
     <div
-      className={`container mx-auto px-4 py-16 transition-all duration-300 ${
+      className={`w-full px-4 py-16 transition-all duration-300 ${
         isDark ? "bg-gray-900 text-white" : "bg-white"
       }`}
     >
