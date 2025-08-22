@@ -116,18 +116,7 @@ const UserLocation = () => {
                     padding: '20px',
                 }}
             >
-                {/* Theme Toggle Button */}
-                <button
-                    onClick={toggleTheme}
-                    className={`fixed top-4 right-4 z-50 p-3 rounded-full transition-all duration-300 shadow-lg ${
-                        theme === 'dark'
-                            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'
-                            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                    }`}
-                    title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                >
-                    {theme === 'light' ? '🌙' : '☀️'}
-                </button>
+              
 
                 <div className={`max-w-4xl mx-auto p-6 rounded-lg shadow-xl mt-10 transition-all duration-300 ${
                     theme === 'dark'
