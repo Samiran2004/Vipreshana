@@ -3,180 +3,132 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
-import Navbar from './components/Navbar'; // <-- Add this import
+import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
+import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
+import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
+import { Link } from 'react-router-dom';
 import API_BASE_URL from './config/api';
 
 const ForgotPassword = () => {
-    const [email, setEmail] = useState('');
-    const { theme, toggleTheme } = useTheme(); 
-    const handleChange = (e) => {
-        setEmail(e.target.value);
-    };
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleChange = (e) => setEmail(e.target.value);
 
-        try {
-            const response = await axios.post(`${API_BASE_URL}/api/forgot-password`, { email });
-            toast.success(response.data.message, {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                icon: "✅",
-                style: {
-                    backgroundColor: '#28a745',
-                    color: '#fff',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                    borderRadius: '12px',
-                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                    textAlign: 'center',
-                    padding: '16px',
-                },
-                progressStyle: {
-                    backgroundColor: '#fff'
-                }
-            });
-        } catch (error) {
-            toast.error('❌ Failed to send reset link. Please try again.', {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                style: {
-                    backgroundColor: '#dc3545',
-                    color: '#fff',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                    borderRadius: '12px',
-                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                    textAlign: 'center',
-                    padding: '16px',
-                },
-                progressStyle: {
-                    backgroundColor: '#fff'
-                }
-            });
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/forgot-password`, { email });
+      toast.success(response.data.message || '✅ Reset link sent!', {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          backgroundColor: '#28a745',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          borderRadius: '12px',
+          textAlign: 'center',
+        },
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || '❌ Failed to send reset link.', {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          backgroundColor: '#dc3545',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          borderRadius: '12px',
+          textAlign: 'center',
+        },
+      });
+    }
+    setIsLoading(false);
+  };
 
-    return (
-        <>
-        <PageMeta /> 
-            <Navbar />
-            <div className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
-                theme === 'dark' ? 'bg-gray-900' : ''
-            }`} style={{ 
-                backgroundImage: theme === 'light' 
-                    ? "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" 
-                    : "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80')"
-            }}>
+  return (
+    <>
+      <PageMeta />
+      <Navbar />
 
-               <div className={`absolute inset-0 flex justify-center pt-24 transition-all duration-300 ${
-                    theme === 'dark' ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
-                }`}>
-                   <div className={`max-h-[90vh] overflow-y-auto p-8 rounded-lg shadow-xl w-full max-w-md transition-all duration-300 ${
-                        theme === 'dark' 
-                            ? 'bg-gray-800 bg-opacity-95 border border-gray-700' 
-                            : 'bg-white bg-opacity-95'
-                    }`}>
-                        <div className="text-center mb-6">
-                            <div className={`text-6xl mb-4 ${theme === 'dark' ? 'opacity-80' : 'opacity-90'}`}>
-                                🔐
-                            </div>
-                            <h1 className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
-                                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-                            }`}>
-                                Forgot Password
-                            </h1>
-                            <p className={`text-md text-center mb-6 transition-colors duration-300 ${
-                                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                            }`}>
-                                Enter your email to receive a password reset link.
-                            </p>
-                        </div>
+      <div className={`relative min-h-screen bg-cover bg-center transition-all duration-300 ${isDark ? 'brightness-75' : 'brightness-100'}`}>
+        <div className="absolute inset-0 w-full h-full z-0">
+          {isDark ? <LiveBackgroundDark /> : <LiveBackgroundLight />}
+        </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="email" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-                                }`}>
-                                    📧 Email Address
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    required
-                                    value={email}
-                                    onChange={handleChange}
-                                    className={`w-full border rounded-md shadow-sm p-3 transition-all duration-300 ${
-                                        theme === 'dark' 
-                                            ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-300 placeholder-gray-400' 
-                                            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200 placeholder-gray-500'
-                                    }`}
-                                    placeholder="Enter your email address"
-                                />
-                            </div>
+        <div className="relative z-20 min-h-screen flex flex-col lg:flex-row">
+          {/* Left Section */}
+          <div className="flex flex-col justify-center items-center lg:items-start w-full lg:w-1/2 px-8 py-16 lg:pl-24">
+            <img src="/logo.png" alt="Vipreshana Logo" className="w-32 h-32 mb-6 drop-shadow-lg animate-bounce-slow" />
+            <h2 className={`text-4xl font-extrabold mb-4 ${isDark ? 'text-white' : 'text-gray-800'}`}>Forgot Password?</h2>
+            <p className={`text-xl ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              Don’t worry! Enter your email and we’ll send you a reset link.
+            </p>
+          </div>
 
-                            <button
-                                type="submit"
-                                className={`w-full font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
-                                    theme === 'dark' 
-                                        ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg hover:shadow-blue-500/25' 
-                                        : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg hover:shadow-blue-500/25'
-                                }`}
-                            >
-                                Send Reset Link
-                            </button>
-                        </form>
+          {/* Right Section */}
+          <div className="flex flex-1 flex-col items-center justify-center w-full lg:w-1/2 px-4 py-16 lg:mt-24 mt-8">
+            <div className={`max-w-xl w-full p-12 shadow-2xl shadow-white/30 backdrop-blur-lg bg-white/20 ${isDark ? 'text-white' : 'text-gray-900'} mb-12 relative`}>
+              {/* Corner Borders */}
+              <span className={`absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 ${isDark ? 'border-white' : 'border-gray-800'}`} />
+              <span className={`absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 ${isDark ? 'border-white' : 'border-gray-800'}`} />
+              <span className={`absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 ${isDark ? 'border-white' : 'border-gray-800'}`} />
+              <span className={`absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 ${isDark ? 'border-white' : 'border-gray-800'}`} />
 
-                        {/* Additional Help Section */}
-                        <div className={`mt-6 p-4 rounded-lg transition-all duration-300 ${
-                            theme === 'dark' ? 'bg-gray-700 border border-gray-600' : 'bg-gray-50 border border-gray-200'
-                        }`}>
-                            <h3 className={`text-sm font-semibold mb-2 transition-colors duration-300 ${
-                                theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-                            }`}>
-                                💡 Need Help?
-                            </h3>
-                            <ul className={`text-xs space-y-1 transition-colors duration-300 ${
-                                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
-                                <li>• Check your spam/junk folder for the reset email</li>
-                                <li>• Make sure you entered the correct email address</li>
-                                <li>• The reset link expires in 1 hour</li>
-                            </ul>
-                        </div>
+              <h1 className={`text-4xl font-bold text-center mb-6 ${isDark ? 'text-white' : 'text-black'}`}>
+                Reset Your Password
+              </h1>
 
-                        {/* Back to Login Link */}
-                        <div className="mt-6 text-center">
-                            <p className={`text-sm transition-colors duration-300 ${
-                                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
-                                Remember your password?{' '}
-                                <button
-                                    onClick={() => window.history.back()}
-                                    className={`font-medium transition-colors duration-300 hover:underline ${
-                                        theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'
-                                    }`}
-                                >
-                                    Back to Login
-                                </button>
-                            </p>
-                        </div>
-                    </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="email" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📧 Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    value={email}
+                    onChange={handleChange}
+                    style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                    className="mt-1 block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40"
+                    placeholder="Enter your email address"
+                  />
                 </div>
-                <ToastContainer theme={theme} />
+
+                <button
+                  type="submit"
+                  disabled={!email || isLoading}
+                  className={`w-full font-semibold py-3 rounded-xl ${
+                    !email || isLoading
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : isDark
+                        ? 'bg-blue-500 hover:bg-blue-400 text-white'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                  }`}
+                >
+                  {isLoading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+              </form>
+
+              <p className={`text-center text-sm mt-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Remember your password?{' '}
+                <Link to="/login" className={`font-semibold hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                  Back to Login
+                </Link>
+              </p>
             </div>
-        </>
-    );
+          </div>
+          <ToastContainer />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default ForgotPassword;
