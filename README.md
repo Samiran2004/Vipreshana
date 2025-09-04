@@ -169,7 +169,7 @@ http://localhost:5000/
 - Upon successful registration, a **confirmation email** will be sent to the user's email address.
 
 <img src="src/Successful -1.jfif" alt="Successful Registration Email 1" width="600" height="1050" />
-<img src="src/Succ - 2.jfif" alt="Successful Registration Email 2" width="600" height="1050" />
+<img src="src/Succ 2.jfif" alt="Successful Registration Email 2" width="600" height="1050" />
 
 ---
 
