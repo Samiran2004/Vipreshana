@@ -152,8 +152,8 @@ http://localhost:5000/
 - The user can register using their **email address**.
 - Email OTP verification will be required.
 
-<img src="src/Email OTP - 1.jfif" alt="Email OTP Step 1" width="600" height="400" />
-<img src="src/Email OTP - 2.jfif" alt="Email OTP Step 2" width="600" height="400" />
+<img src="src/Email OTP - 1.jfif" alt="Email OTP Step 1" width="600" height="600" />
+<img src="src/Email OTP - 2.jfif" alt="Email OTP Step 2" width="600" height="700" />
 
 ---
 
@@ -161,7 +161,7 @@ http://localhost:5000/
 - Users can reset their password if forgotten.
 - Email OTP verification will be required.
 
-<img src="src/Reset Password.jfif" alt="Reset Password OTP" width="600" height="400" />
+<img src="src/Reset Password.jfif" alt="Reset Password OTP" width="600" height="650" />
 
 ---
 
