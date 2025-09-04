@@ -138,20 +138,46 @@ http://localhost:5000/
 ---
 
 ## 
-- The user is required to register using their Phone Number for authentication.
+## 🔁 User Registration & Verification Workflow
 
-<img src="src/OTP.jfif" alt="OTP Registration" width="1901" height="881" />
+### 1️⃣ Register Using Mobile Phone Number
+- The user can register using their **mobile phone number**.
+- An **OTP** will be sent for verification.
 
+<img src="src/OTP.jfif" alt="Mobile OTP" width="600" height="400" />
 
-- An OTP is sent to the provided mobile number for verification.
+---
 
-<img width="860" height="675" alt="image" src="https://github.com/user-attachments/assets/2280890d-5ae1-4e87-b599-c8dd103b2e6e" />
+### 2️⃣ Register Using Email
+- The user can register using their **email address**.
+- Email OTP verification will be required.
 
-- Upon successful registration a confirmation mail will be sent to the mail given by the user in registraion form.
+<img src="src/Email OTP - 1.jfif" alt="Email OTP Step 1" width="600" height="400" />
+<img src="src/Email OTP - 2.jfif" alt="Email OTP Step 2" width="600" height="400" />
 
- <img width="294" height="608" alt="image" src="https://github.com/user-attachments/assets/7bdaae63-786c-4436-a3e4-5ff7f11d4740" />
+---
 
-- After getting this mail the user can start exploring Vipreshana and its benefits
+### 3️⃣ Forgot Password / Reset
+- Users can reset their password if forgotten.
+- Email OTP verification will be required.
+
+<img src="src/Reset Password.jfif" alt="Reset Password OTP" width="600" height="400" />
+
+---
+
+### 4️⃣ Confirmation Email
+- Upon successful registration, a **confirmation email** will be sent to the user's email address.
+
+<img src="src/Successful -1.jfif" alt="Successful Registration Email 1" width="600" height="400" />
+<img src="src/Successful -2.jfif" alt="Successful Registration Email 2" width="600" height="400" />
+
+---
+
+### 5️⃣ SMS Notification After Delivery
+- After successful delivery of goods, the user receives an **SMS notification**.
+
+<img src="src/SMS.jfif" alt="Delivery SMS Notification" width="600" height="400" />
+
 
 ---
 
