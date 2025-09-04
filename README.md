@@ -137,10 +137,10 @@ http://localhost:5000/
 ```
 ---
 
-## 🔁 Workflow
-- The user is required to register using their Phone Number for authentication.
+## 🔁 Workflow- The user is required to register using their Phone Number for authentication.
 
- <img width="1901" height="881" alt="image" src="https://github.com/user-attachments/assets/83318c08-f520-4b6f-befc-b786a3a52bb6" />
+ <img src="Vipreshana/OTP.jfif" alt="OTP Registration" width="1901" height="881" />
+
 
 - An OTP is sent to the provided mobile number for verification.
 
