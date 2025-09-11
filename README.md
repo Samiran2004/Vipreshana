@@ -156,20 +156,25 @@ http://localhost:5000/
 <img src="src/Email OTP - 2.jfif" alt="Email OTP Step 2" width="600" height="1050" />
 
 ---
+### 4️⃣ Confirmation Email
+- Upon successful registration, a **confirmation email** will be sent to the user's email address.
+
+<img src="src/Successful -1.jfif" alt="Successful Registration Email 1" width="600" height="1050" />
+<img src="src/Succ 2.jfif" alt="Successful Registration Email 2" width="600" height="1050" />
+
+---
+### 🔒 Password Security
+- For your safety, your password will be **securely stored using Bcrypt hashing**. This ensures that even if our database is compromised, your password remains protected.  
+
+<img src="src/Bcrypt.jpg" alt="Bcrypt Password Hashing" width="600" height="400" />
+
+---
 
 ### 3️⃣ Forgot Password / Reset
 - Users can reset their password if forgotten.
 - Email OTP verification will be required.
 
 <img src="src/Reset Password.jfif" alt="Reset Password OTP" width="600" height="1050" />
-
----
-
-### 4️⃣ Confirmation Email
-- Upon successful registration, a **confirmation email** will be sent to the user's email address.
-
-<img src="src/Successful -1.jfif" alt="Successful Registration Email 1" width="600" height="1050" />
-<img src="src/Succ 2.jfif" alt="Successful Registration Email 2" width="600" height="1050" />
 
 ---
 
